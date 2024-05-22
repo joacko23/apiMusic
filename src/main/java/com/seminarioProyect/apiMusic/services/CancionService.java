@@ -3,18 +3,15 @@ package com.seminarioProyect.apiMusic.services;
 import com.seminarioProyect.apiMusic.dtos.CancionRequest;
 import com.seminarioProyect.apiMusic.dtos.CancionResponse;
 import com.seminarioProyect.apiMusic.dtos.CancionesResponse;
+import com.seminarioProyect.apiMusic.exceptions.ResourceNotFoundException;
 import com.seminarioProyect.apiMusic.mappers.CancionMapper;
 import com.seminarioProyect.apiMusic.models.Cancion;
 import com.seminarioProyect.apiMusic.repositories.CancionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class CancionService {
@@ -24,12 +21,13 @@ public class CancionService {
     public CancionMapper cancionMapper;
 
     public ResponseEntity setCancion(CancionRequest cancionRequest){
-        if (cancionRequest == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La solicitud de canción no puede ser nula");
+        try {
+            Cancion cancion = cancionMapper.toEntity(cancionRequest);
+            cancionRepository.save(cancion);
+            return ResponseEntity.ok("Cancion guardada: " + cancion.getTitulo());
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar la canción: " + e.getMessage(), e);
         }
-        Cancion cancion = cancionMapper.toEntity(cancionRequest);
-        cancionRepository.save(cancion);
-        return ResponseEntity.ok("Cancion guardada: " + cancion.getTitulo());
     }
 
     public CancionesResponse listarCanciones(){
@@ -37,44 +35,44 @@ public class CancionService {
             List<Cancion> canciones = cancionRepository.findAll();
             return cancionMapper.cancionListToResponse(canciones);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al recuperar la lista de canciones", e);
+            throw new RuntimeException("Error al listar las canciones: " + e.getMessage(), e);
         }
     }
 
-    public ResponseEntity updateCancion(Long id, CancionRequest cancionRequest) {
-        Optional<Cancion> optionalCancion = cancionRepository.findById(id);
-        if (optionalCancion.isPresent()) {
-            Cancion cancion = optionalCancion.get();
+    public ResponseEntity updateCancion(Long id, CancionRequest cancionRequest){
+        try {
+            Cancion cancion = cancionRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cancion no encontrada con id: " + id));
+
             cancion.setTitulo(cancionRequest.getTitulo());
             cancion.setDuracion(cancionRequest.getDuracion());
             cancion.setLetra(cancionRequest.getLetra());
+
             cancionRepository.save(cancion);
             return ResponseEntity.ok("Cancion actualizada: " + cancion.getTitulo());
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Canción no encontrada");
+        } catch (Exception e) {
+            throw new RuntimeException("Error al actualizar la canción: " + e.getMessage(), e);
         }
     }
 
-    public ResponseEntity deleteCancion(Long id) {
-        Optional<Cancion> optionalCancion = cancionRepository.findById(id);
-        if (optionalCancion.isPresent()) {
-            Cancion cancion = optionalCancion.get();
+    public ResponseEntity deleteCancion(Long id){
+        try {
+            Cancion cancion = cancionRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cancion no encontrada con id: " + id));
             cancionRepository.delete(cancion);
             return ResponseEntity.ok("Cancion eliminada: " + cancion.getTitulo());
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Canción no encontrada");
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar la canción: " + e.getMessage(), e);
         }
     }
 
     public CancionResponse buscarCancionPorId(Long id) {
         try {
-            Optional<Cancion> optionalCancion = cancionRepository.findById(id);
-            Cancion cancion = optionalCancion.orElseThrow(() -> new NoSuchElementException("Canción no encontrada"));
+            Cancion cancion = cancionRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Canción no encontrada con id: " + id));
             return cancionMapper.toResponse(cancion);
-        } catch (NoSuchElementException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar la canción por ID", e);
+            throw new RuntimeException("Error al buscar la canción: " + e.getMessage(), e);
         }
     }
 }
