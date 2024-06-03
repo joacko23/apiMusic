@@ -17,10 +17,14 @@ public class Album {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
-    private List<Cancion> canciones;
+    private List<Tema> canciones;
 
-    public void agregarCancion(Cancion cancion) {
-        this.canciones.add(cancion);
+    @ManyToOne
+    @JoinColumn(name = "artista_id")
+    private Artista artista;
+
+    public void agregarCancion(Tema tema) {
+        this.canciones.add(tema);
     }
 
 }

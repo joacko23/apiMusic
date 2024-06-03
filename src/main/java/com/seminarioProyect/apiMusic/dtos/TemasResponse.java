@@ -4,6 +4,6 @@ import lombok.Data;
 
 import java.util.List;
 @Data
-public class CancionesResponse {
-    List<CancionResponse> canciones;
+public class TemasResponse {
+    List<TemaResponse> canciones;
 }

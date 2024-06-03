@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Component
 public class AlbumMapper {
     @Autowired
-    private CancionMapper cancionMapper;
+    private TemaMapper temaMapper;
 
     public AlbumResponse toResponse(Album album) {
         AlbumResponse response = new AlbumResponse();
@@ -21,8 +21,9 @@ public class AlbumMapper {
         response.setNombre(album.getNombre());
         response.setAnioLanzamiento(album.getAnioLanzamiento());
         response.setCanciones(album.getCanciones().stream()
-                .map(cancionMapper::toResponse)
+                .map(temaMapper::toResponse)
                 .collect(Collectors.toList()));
+        response.setArtistaId(album.getArtista().getId());
         return response;
     }
 
@@ -31,7 +32,7 @@ public class AlbumMapper {
         album.setNombre(albumRequest.getNombre());
         album.setAnioLanzamiento(albumRequest.getAnioLanzamiento());
         album.setCanciones(albumRequest.getCanciones().stream()
-                .map(cancionMapper::toEntity)
+                .map(temaMapper::toEntity)
                 .collect(Collectors.toList()));
         return album;
     }
@@ -47,7 +48,7 @@ public class AlbumMapper {
             albumResponse.setAnioLanzamiento(album.getAnioLanzamiento());
             albumResponse.setCanciones(
                     album.getCanciones().stream()
-                            .map(cancionMapper::toResponse)
+                            .map(temaMapper::toResponse)
                             .collect(Collectors.toList())
             );
             albumResponseList.add(albumResponse);

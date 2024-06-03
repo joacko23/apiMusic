@@ -5,10 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class AlbumResponse {
+public class PlaylistResponse {
     private Long id;
     private String nombre;
-    private int anioLanzamiento;
     private List<TemaResponse> canciones;
-    private Long artistaId;
 }

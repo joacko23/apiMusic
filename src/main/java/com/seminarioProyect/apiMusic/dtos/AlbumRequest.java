@@ -8,5 +8,6 @@ import java.util.List;
 public class AlbumRequest {
     private String nombre;
     private int anioLanzamiento;
-    private List<CancionRequest> canciones;
+    private List<TemaRequest> canciones;
+    private Long artistaId;
 }
