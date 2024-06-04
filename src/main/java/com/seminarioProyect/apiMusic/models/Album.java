@@ -3,6 +3,7 @@ package com.seminarioProyect.apiMusic.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,13 +18,16 @@ public class Album {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "album_id")
-    private List<Tema> canciones;
+    private List<Tema> canciones = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "artista_id")
     private Artista artista;
 
     public void agregarCancion(Tema tema) {
+        if (this.canciones == null) {
+            this.canciones = new ArrayList<>();
+        }
         this.canciones.add(tema);
     }
 

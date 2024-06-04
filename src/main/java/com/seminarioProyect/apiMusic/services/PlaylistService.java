@@ -5,7 +5,6 @@ import com.seminarioProyect.apiMusic.dtos.PlaylistRequest;
 import com.seminarioProyect.apiMusic.dtos.PlaylistResponse;
 import com.seminarioProyect.apiMusic.exceptions.ResourceNotFoundException;
 import com.seminarioProyect.apiMusic.mappers.PlaylistMapper;
-import com.seminarioProyect.apiMusic.models.Album;
 import com.seminarioProyect.apiMusic.models.Playlist;
 import com.seminarioProyect.apiMusic.models.Tema;
 import com.seminarioProyect.apiMusic.repositories.PlaylistRepository;
