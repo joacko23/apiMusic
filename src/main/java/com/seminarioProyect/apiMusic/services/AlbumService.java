@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -73,7 +74,10 @@ public class AlbumService {
         Tema tema = temaRepository.findById(cancionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cancion no encontrada con id: " + cancionId));
 
-        album.agregarCancion(tema);
+        if (album.getCanciones() == null) {
+            album.setCanciones(new ArrayList<>());
+        }
+        album.getCanciones().add(tema);
         albumRepository.save(album);
 
         return albumMapper.toResponse(album);

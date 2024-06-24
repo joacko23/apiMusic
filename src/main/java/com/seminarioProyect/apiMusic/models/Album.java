@@ -24,11 +24,5 @@ public class Album {
     @JoinColumn(name = "artista_id")
     private Artista artista;
 
-    public void agregarCancion(Tema tema) {
-        if (this.canciones == null) {
-            this.canciones = new ArrayList<>();
-        }
-        this.canciones.add(tema);
-    }
 
 }
